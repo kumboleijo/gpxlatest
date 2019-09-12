@@ -4,6 +4,7 @@ const util = require('util')
 const readFile = util.promisify(fs.readFile)
 const writeFile = util.promisify(fs.writeFile)
 
+const xa = require('xa')
 const xml2js = require('xml2js')
 const moment = require('moment')
 
@@ -27,7 +28,7 @@ async function gpxlatest(options) {
         return moment(a).format("x") - moment(b).format("x")
     })
 
-    console.log(`[INFO]: the latest trkpt has the timestamp: ${timestamps[timestamps.length-1]}`);
+    xa.info(`the latest trkpt has the timestamp: ${timestamps[timestamps.length-1]}`);
     
 }
 

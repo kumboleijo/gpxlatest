@@ -10,7 +10,9 @@
   "author": "Jonas Schmitt",
   "license": "ISC",
   "dependencies": {
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "xa": "^2.3.0",
+    "xml2js": "^0.4.22"
   },
   "files": [
     "bin/*",

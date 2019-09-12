@@ -1,0 +1,25 @@
+{
+  "name": "gpxlatest",
+  "version": "0.0.2",
+  "description": "This tool helps you to find the latest timestamp of a gpx file.",
+  "main": "index.js",
+  "bin": "bin/gpxlatest",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jonas Schmitt",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.24.0"
+  },
+  "files": [
+    "bin/*",
+    "src/*",
+    "index.js"
+  ],
+  "keywords": [
+    "gpx",
+    "latest",
+    "gpxlatest"
+  ]
+}

@@ -13,20 +13,35 @@ const parseString = util.promisify(parser.parseString);
 
 const cwd = process.cwd();
 
-async function gpxlatest(options) {
-    let _path = path.isAbsolute(options) ? options : `${cwd}/${options}`;
-    let gpxFile = await readFile(_path);
+async function gpxlatest(input) {
+    xa.info('input:  ' + input);
+    let _inputPath = path.isAbsolute(input) ? input : `${cwd}/${input}`;
+    let gpxFile = await readFile(_inputPath);
     let parsedFile = await parseString(gpxFile);
-    let trkpts = parsedFile.gpx.trk[0].trkseg[0].trkpt;
+    let trkpts;
+    try {
+        trkpts = parsedFile.gpx.trk[0].trkseg[0].trkpt;
+        if (trkpts.length == 0) process.exit(1);
+    } catch (error) {
+        xa.error('no trkpts found in the given file');
+        process.exit(1);
+    }
+
+    xa.success('parse input file');
 
     let timestamps = [];
-    trkpts.forEach(trkpt => {
-        timestamps.push(trkpt.time[0]);
-    });
+    try {
+        trkpts.forEach(trkpt => {
+            timestamps.push(trkpt.time[0]);
+        });
 
-    timestamps.sort((a, b) => {
-        return moment(a).format('x') - moment(b).format('x');
-    });
+        timestamps.sort((a, b) => {
+            return moment(a).format('x') - moment(b).format('x');
+        });
+    } catch (error) {
+        xa.error('no timestamps in the trkpts');
+        process.exit(1);
+    }
 
     xa.info(`the latest trkpt has the timestamp: ${timestamps[timestamps.length - 1]}`);
 }

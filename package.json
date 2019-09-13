@@ -6,12 +6,13 @@
     "bin": "bin/gpxlatest",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "prepublishOnly": "git add . && git commit -m \"update: new npm version\" && npm version patch",
+        "prepublishOnly": "npm version patch",
         "publish": "git push && git push --tags"
     },
     "author": "Jonas Schmitt",
     "license": "ISC",
     "dependencies": {
+        "commander": "^3.0.1",
         "moment": "^2.24.0",
         "xa": "^2.3.0",
         "xml2js": "^0.4.22"

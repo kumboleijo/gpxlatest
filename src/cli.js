@@ -1,20 +1,17 @@
-// usage represents the help guide
-const usage = function() {
-    var usageText = `
-    This tool helps you to find the latest timestamp of a gpx file.
-  
-    usage:  gpxlatest <file.gpx>
-
-    <file.gpx>    relative path to the .gpx file
-  `;
-    console.log(usageText);
-};
+const program = require('commander');
+const pjson = require('../package.json');
 
 const gpxlatest = require('./main');
 
-function cli(args) {
-    let options = args.splice(2);
-    if (options.length != 1) usage() && process.exit(1);
-    else gpxlatest(options[0]);
+function cli(argv) {
+    program
+        .version(pjson.version)
+        .description(pjson.description)
+        .option('-i ,--input <file>', 'specify the input file');
+
+    program.parse(argv);
+
+    gpxlatest(program.input, program.output);
 }
+
 module.exports = cli;

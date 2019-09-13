@@ -2,12 +2,21 @@
 
 This tool helps you to find the latest timestamp of a gpx file.
 
+## Install 
+
+```sh
+npm i -g gpxlatest
+```
+
 ## Usage
 
 ```sh
-This tool helps you to find the latest timestamp of a gpx file.
-  
-usage:  gpxlatest <file.gpx>
+Usage: gpxlatest [options]
 
-<file.gpx>    relative path to the .gpx file
+This tool helps you to find the latest timestamp of a gpx file.
+
+Options:
+  -V, --version       output the version number
+  -i ,--input <file>  specify the input file
+  -h, --help          output usage information
 ```

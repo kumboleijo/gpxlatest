@@ -1,3 +1,3 @@
-const gpxlatest = require('./src/main')
+const gpxlatest = require('./src/main');
 
-module.exports = gpxlatest
+module.exports = gpxlatest;

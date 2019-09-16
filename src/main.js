@@ -13,7 +13,9 @@ const parseString = util.promisify(parser.parseString);
 
 const cwd = process.cwd();
 
-async function gpxlatest(input) {
+async function gpxlatest(program) {
+    let input = program.input;
+
     xa.info('input:  ' + input);
     let _inputPath = path.isAbsolute(input) ? input : `${cwd}/${input}`;
     let gpxFile = await readFile(_inputPath);
@@ -43,7 +45,17 @@ async function gpxlatest(input) {
         process.exit(1);
     }
 
-    xa.info(`the latest trkpt has the timestamp: ${timestamps[timestamps.length - 1]}`);
+    if (program.all) {
+        xa.info('All Timestamps:');
+        timestamps.forEach(timestamp => {
+            console.log(timestamp);
+        });
+    }
+
+    if (program.first) {
+        xa.info(`First Timestamp:  ${timestamps[0]}`);
+        xa.info(`Latest Timestamp: ${timestamps[timestamps.length - 1]}`);
+    } else xa.info(`Latest Timestamp: ${timestamps[timestamps.length - 1]}`);
 }
 
 module.exports = gpxlatest;

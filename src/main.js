@@ -54,6 +54,8 @@ async function gpxlatest(input, all, first) {
         xa.info(`First Timestamp:  ${timestamps[0]}`);
         xa.info(`Latest Timestamp: ${timestamps[timestamps.length - 1]}`);
     } else xa.info(`Latest Timestamp: ${timestamps[timestamps.length - 1]}`);
+
+    return timestamps;
 }
 
 module.exports = gpxlatest;

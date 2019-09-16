@@ -13,7 +13,7 @@ function cli(argv) {
 
     program.parse(argv);
 
-    gpxlatest(program);
+    gpxlatest(program.input, program.all, program.first);
 }
 
 module.exports = cli;

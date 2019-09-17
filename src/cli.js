@@ -10,12 +10,14 @@ function cli(argv) {
         .option('-i ,--input <file>', 'specify the input file')
         .option('-a, --all', 'show all timestamps (sorted)', false)
         .option('-f, --first', 'show the first (oldest) timestamp', false)
-        .option('-s, --start <TIMESTAMP>', 'filterStart', null)
-        .option('-t, --stop <TIMESTAMP>', 'filterStop', null);
+        .option('--start <TIMESTAMP>', 'filterStart', null)
+        .option('--stop <TIMESTAMP>', 'filterStop', null)
+        .option('-s, --save', 'save output to a file', false)
+        .option('-o, --output <file>', 'specify the output file');
 
     program.parse(argv);
 
-    gpxlatest(program.input, program.all, program.first, program.start, program.stop);
+    gpxlatest(program.input, program.all, program.first, program.start, program.stop, program.save, program.output);
 }
 
 module.exports = cli;

@@ -10,6 +10,7 @@ const moment = require('moment');
 
 const parser = new xml2js.Parser();
 const parseString = util.promisify(parser.parseString);
+const builder = new xml2js.Builder();
 
 const cwd = process.cwd();
 
@@ -33,35 +34,35 @@ async function filter(trkpts, filterStart = null, filterStop = null) {
     return trkptsFiltered;
 }
 
-async function gpxlatest(input, all, first, filterStart, filterStop) {
+async function gpxlatest(input, all, first, filterStart, filterStop, save, output) {
     xa.info('input:  ' + input);
     let _inputPath = path.isAbsolute(input) ? input : `${cwd}/${input}`;
+    let _outputPath;
+
     let gpxFile = await readFile(_inputPath);
     let parsedFile = await parseString(gpxFile);
-    let trkpts;
-    try {
-        trkpts = parsedFile.gpx.trk[0].trkseg[0].trkpt;
-        if (trkpts.length == 0) process.exit(1);
-    } catch (error) {
-        xa.error('no trkpts found in the given file');
-        process.exit(1);
-    }
-
     xa.success('parse input file');
 
-    try {
-        trkpts.sort((a, b) => {
-            return moment(a.time[0]).format('x') - moment(b.time[0]).format('x');
-        });
-    } catch (error) {
-        xa.error('no timestamps in the trkpts');
-        process.exit(1);
-    }
+    let trkpts = parsedFile.gpx.trk[0].trkseg[0].trkpt;
+    let trkptsSorted = trkpts.sort((a, b) => {
+        return moment(a.time[0]).format('x') - moment(b.time[0]).format('x');
+    });
 
     let trkptsFiltered;
-
     if (filterStart != null || filterStop != null) {
-        trkptsFiltered = await filter(trkpts, filterStart, filterStop);
+        trkptsFiltered = await filter(trkptsSorted, filterStart, filterStop);
+    }
+
+    if (save && output) {
+        _outputPath = path.isAbsolute(output) ? output : `${cwd}/${output}`;
+
+        let reducedFile = parsedFile;
+        reducedFile.gpx.trk[0].trkseg[0].trkpt = trkptsFiltered;
+        let xml = builder.buildObject(reducedFile);
+
+        xa.info('output:  ' + output);
+        await writeFile(_outputPath, xml);
+        xa.success('file saved');
     }
 
     if (all) {

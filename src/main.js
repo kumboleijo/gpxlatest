@@ -37,7 +37,7 @@ async function filter(trkpts, filterStart = null, filterStop = null) {
 async function gpxlatest(input, all, first, filterStart, filterStop, save, output) {
     xa.info('input:  ' + input);
     let _inputPath = path.isAbsolute(input) ? input : `${cwd}/${input}`;
-    let _outputPath;
+    let _outputPath = output ? (path.isAbsolute(output) ? output : `${cwd}/${output}`) : null;
 
     let gpxFile = await readFile(_inputPath);
     let parsedFile = await parseString(gpxFile);
@@ -48,14 +48,12 @@ async function gpxlatest(input, all, first, filterStart, filterStop, save, outpu
         return moment(a.time[0]).format('x') - moment(b.time[0]).format('x');
     });
 
-    let trkptsFiltered;
+    let trkptsFiltered = [];
     if (filterStart != null || filterStop != null) {
         trkptsFiltered = await filter(trkptsSorted, filterStart, filterStop);
     }
 
-    if (save && output) {
-        _outputPath = path.isAbsolute(output) ? output : `${cwd}/${output}`;
-
+    if (save && output && trkptsFiltered.length > 0) {
         let reducedFile = parsedFile;
         reducedFile.gpx.trk[0].trkseg[0].trkpt = trkptsFiltered;
         let xml = builder.buildObject(reducedFile);
@@ -68,10 +66,12 @@ async function gpxlatest(input, all, first, filterStart, filterStop, save, outpu
     if (all) {
         xa.info('All Timestamps:');
 
-        if (trkptsFiltered != null) {
-            trkptsFiltered.forEach(trkpt => {
-                console.log(trkpt.time[0]);
-            });
+        if (filterStart != null || filterStop != null) {
+            if (trkptsFiltered.length > 0) {
+                trkptsFiltered.forEach(trkpt => {
+                    console.log(trkpt.time[0]);
+                });
+            } else xa.warning('there are no timestamps with the applied filters');
         } else {
             trkpts.forEach(trkpt => {
                 console.log(trkpt.time[0]);
@@ -79,23 +79,37 @@ async function gpxlatest(input, all, first, filterStart, filterStop, save, outpu
         }
     }
 
-    if (trkptsFiltered != null) {
-        if (first) {
-            xa.info(`First Timestamp:  ${trkptsFiltered[0].time[0]}`);
-            xa.info(`Latest Timestamp: ${trkptsFiltered[trkptsFiltered.length - 1].time[0]}`);
-        } else xa.info(`Latest Timestamp: ${trkptsFiltered[trkptsFiltered.length - 1].time[0]}`);
+    let result;
+
+    if (filterStart != null || filterStop != null) {
+        if (trkptsFiltered.length > 0) {
+            if (first) {
+                xa.info(`First Timestamp:  ${trkptsFiltered[0].time[0]}`);
+                xa.info(`Latest Timestamp: ${trkptsFiltered[trkptsFiltered.length - 1].time[0]}`);
+            } else xa.info(`Latest Timestamp: ${trkptsFiltered[trkptsFiltered.length - 1].time[0]}`);
+            result = {
+                trackpoints: trkptsFiltered,
+                first: trkptsFiltered[0].time[0],
+                latest: trkptsFiltered[trkptsFiltered.length - 1].time[0]
+            };
+        } else {
+            result = {
+                trackpoints: [],
+                first: null,
+                latest: null
+            };
+        }
     } else {
         if (first) {
             xa.info(`First Timestamp:  ${trkpts[0].time[0]}`);
             xa.info(`Latest Timestamp: ${trkpts[trkpts.length - 1].time[0]}`);
         } else xa.info(`Latest Timestamp: ${trkpts[trkpts.length - 1].time[0]}`);
+        result = {
+            trackpoints: trkptsFiltered.length > 0 ? trkptsFiltered : trkpts,
+            first: trkptsFiltered.length > 0 ? trkptsFiltered[0].time[0] : trkpts[0].time[0],
+            latest: trkptsFiltered.length > 0 ? trkptsFiltered[trkptsFiltered.length - 1].time[0] : trkpts[trkpts.length - 1].time[0]
+        };
     }
-
-    let result = {
-        trackpoints: trkptsFiltered != null ? trkptsFiltered : trkpts,
-        first: trkptsFiltered != null ? trkptsFiltered[0].time[0] : trkpts[0].time[0],
-        latest: trkptsFiltered != null ? trkptsFiltered[trkptsFiltered.length - 1].time[0] : trkpts[trkpts.length - 1].time[0]
-    };
 
     return result;
 }
